@@ -1,6 +1,7 @@
-package com.iastate.nachoparty.rcpiapp;
+package com.iastate.nachoparty.rcpiapp.util;
 
-import com.iastate.nachoparty.rcpiapp.util.SystemUiHider;
+import com.iastate.nachoparty.rcpiapp.util.util.SystemUiHider;
+import com.iastate.nachoparty.rcpiapp.ControllerHomeScreen;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,7 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.content.Intent;
 
+import com.iastate.nachoparty.rcpiapp.R;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -17,7 +21,7 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class FullScreenActivity extends Activity {
+public class BluetoothHandler extends Activity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -50,10 +54,11 @@ public class FullScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_full_screen);
+        setContentView(R.layout.activity_bluetooth_handler);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+        final Button back=(Button) findViewById(R.id.button_back);
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -113,6 +118,14 @@ public class FullScreenActivity extends Activity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(getApplicationContext(), ControllerHomeScreen.class));
+            }
+        });
     }
 
     @Override
