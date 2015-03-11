@@ -10,10 +10,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.content.Intent;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.iastate.nachoparty.rcpiapp.R;
+
+import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -57,7 +63,7 @@ public class BluetoothHandler extends Activity {
         setContentView(R.layout.activity_bluetooth_handler);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
+        final View contentView = findViewById(R.id.textView_bMenu);
         final Button back=(Button) findViewById(R.id.button_back);
 
         // Set up an instance of SystemUiHider to control the system UI for
@@ -117,7 +123,10 @@ public class BluetoothHandler extends Activity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.button_back).setOnTouchListener(mDelayHideTouchListener);
+
+        populateListView();
+        registerClick();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +147,29 @@ public class BluetoothHandler extends Activity {
         delayedHide(100);
     }
 
+    protected void populateListView()
+    {
+        String myItems[];//Add bluetooth items to this list
+
+        ArrayAdapter <String> adapter=new ArrayAdapter<String>(myItems);
+
+        ListView list=(ListView) findViewById(R.id.listView_btooth);
+        list.setAdapter(adapter);
+    }
+
+    protected void registerClick()
+    {
+        ListView list=(ListView) findViewById(R.id.listView_btooth);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                //Add implementation for the connection of the bluetooth car to the android device.
+
+                Toast.makeText(BluetoothHandler.this,"You have been connected",Toast.LENGTH_LONG);
+            }
+        });
+    }
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
