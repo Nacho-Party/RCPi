@@ -1,5 +1,6 @@
-package com.example.anastasia.nachoparty;
+package com.iastate.nachoparty.rcpiapp;
 
+import android.app.Activity;
 import android.nfc.Tag;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
@@ -37,9 +38,9 @@ public class MainActivity1 extends Activity{
     /* Called when the activity is first created */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        buttonOn = (Button) findViewById(R.id.button);
-        buttonOff = (Button) findViewById(R.id.button);
+        setContentView(R.layout.activity_full_screen);
+        buttonOn = (Button) findViewById(R.id.button_go);
+        buttonOff = (Button) findViewById(R.id.button_stop);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkBTState();
         buttonOn.setOnClickListener(new OnClickListener() {
