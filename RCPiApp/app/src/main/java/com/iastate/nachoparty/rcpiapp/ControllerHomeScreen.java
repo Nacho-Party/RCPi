@@ -55,8 +55,8 @@ public class ControllerHomeScreen extends Activity {
 
         setContentView(R.layout.activity_full_screen);
 
-        final View controlsView = findViewById(R.id.fullscreen_content_controls);
-        final View contentView = findViewById(R.id.fullscreen_content);
+        final View controlsView = findViewById(R.id.listView);
+        final View contentView = findViewById(R.id.textView_bMenu);
         final Button bluetooth=(Button) findViewById(R.id.button_bluetooth);
         final Button go=(Button) findViewById(R.id.button_go);
         final Button stop=(Button) findViewById(R.id.button_stop);

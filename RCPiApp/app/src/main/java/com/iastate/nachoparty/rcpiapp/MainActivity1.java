@@ -30,7 +30,8 @@ public class MainActivity1 extends Activity {
     private BluetoothSocket bluetoothSocket = null;
     private OutputStream outstream = null;
     // SPP UUID service
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-8000-00805F9B34FB");
+
+    //private static final UUID MY_UUID = UUID.fromString("00001101-0000-8000-00805F9B34FB");
     //MAC address of bluetooth
     private static String address = "00:02:72:cd:9f:60 ";//to be updated
 
@@ -41,7 +42,7 @@ public class MainActivity1 extends Activity {
         buttonOn = (Button) findViewById(R.id.button_go);
         buttonOff = (Button) findViewById(R.id.button_stop);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        checkBTState();
+        //checkBTState();
         buttonOn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,13 +63,14 @@ public class MainActivity1 extends Activity {
         if (Build.VERSION.SDK_INT >= 10) {
             try {
                 final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord");
-                return (BluetoothSocket) m.invoke(device, MY_UUID);
+      //          return (BluetoothSocket) m.invoke(device, MY_UUID);
             } catch (Exception e) {
                 Log.e(label, "Could not create Insecure RFComm Connection", e);
 
             }
         }
-        return device.createRfcommSocketToServiceRecord(MY_UUID);
+        //return device.createRfcommSocketToServiceRecord(MY_UUID);
+        return null;
     }
 
     public void onResume() {
@@ -152,7 +154,7 @@ public class MainActivity1 extends Activity {
             String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
             if (address.equals("00:00:00:00:00:00"))
                 msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
-            msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
+            //msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
 
             errorExit("Fatal Error", msg);
         }
