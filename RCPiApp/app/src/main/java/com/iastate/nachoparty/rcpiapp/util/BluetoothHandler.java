@@ -125,7 +125,7 @@ public class BluetoothHandler extends Activity {
         // while interacting with the UI.
         findViewById(R.id.button_back).setOnTouchListener(mDelayHideTouchListener);
 
-        populateListView();
+        //populateListView();
         registerClick();
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -147,7 +147,7 @@ public class BluetoothHandler extends Activity {
         delayedHide(100);
     }
 
-    protected void populateListView()
+    /*protected void populateListView()
     {
         String myItems[];//Add bluetooth items to this list
 
@@ -155,7 +155,7 @@ public class BluetoothHandler extends Activity {
 
         ListView list=(ListView) findViewById(R.id.listView_btooth);
         list.setAdapter(adapter);
-    }
+    }*/
 
     protected void registerClick()
     {

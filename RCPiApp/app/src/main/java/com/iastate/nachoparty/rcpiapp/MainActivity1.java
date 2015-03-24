@@ -20,10 +20,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
-import com.example.*;
 import com.iastate.nachoparty.rcpiapp.R;
 
-public class MainActivity1 extends Activity{
+public class MainActivity1 extends Activity {
 
     private static final String label = "bluetooth1";
     Button buttonOn, buttonOff;
