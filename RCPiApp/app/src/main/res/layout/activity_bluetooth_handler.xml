@@ -35,4 +35,10 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/button_back"
         android:layout_alignParentBottom="true" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="16" />
+    
 </RelativeLayout>
