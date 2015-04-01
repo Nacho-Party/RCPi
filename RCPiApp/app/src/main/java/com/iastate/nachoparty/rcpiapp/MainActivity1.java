@@ -24,16 +24,16 @@ import com.iastate.nachoparty.rcpiapp.R;
 
 public class MainActivity1 extends Activity {
 
-    private static final String label = "bluetooth1";
+    protected static final String label = "bluetooth1";
     Button buttonOn, buttonOff;
-    private BluetoothAdapter bluetoothAdapter = null;
-    private BluetoothSocket bluetoothSocket = null;
-    private OutputStream outstream = null;
+    protected static BluetoothAdapter bluetoothAdapter = null;
+    protected static BluetoothSocket bluetoothSocket = null;
+    protected static OutputStream outstream = null;
     // SPP UUID service
 
     //private static final UUID MY_UUID = UUID.fromString("00001101-0000-8000-00805F9B34FB");
     //MAC address of bluetooth
-    private static String address = "00:02:72:cd:9f:60 ";//to be updated
+    protected static String address = "00:02:72:cd:9f:60 ";//to be updated
 
     /* Called when the activity is first created */
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,8 @@ public class MainActivity1 extends Activity {
         buttonOff = (Button) findViewById(R.id.button_stop);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //checkBTState();
+
+        /*
         buttonOn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +59,8 @@ public class MainActivity1 extends Activity {
                 Toast.makeText(getBaseContext(), "Turn off LED", Toast.LENGTH_SHORT).show();
             }
         });
+
+        */
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -139,11 +143,11 @@ public class MainActivity1 extends Activity {
             }
         }
     }
-    private void errorExit(String title, String message){
+    protected void errorExit(String title, String message){
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
     }
-    private void sendData(String message) {
+    protected void sendData(String message) {
         byte[] msgBuffer = message.getBytes();
 
         Log.d(label, "...Send data: " + message + "...");

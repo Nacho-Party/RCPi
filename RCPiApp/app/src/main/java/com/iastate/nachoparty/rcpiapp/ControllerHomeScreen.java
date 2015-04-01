@@ -8,10 +8,14 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 
 /**
@@ -138,28 +142,28 @@ public class ControllerHomeScreen extends Activity {
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FIX ME
+                sendData("Go");
             }
         });
 
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FIX ME
+                sendData("Stop");
             }
         });
 
         left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FIX ME
+                sendData("Left");
             }
         });
 
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //FIX ME
+                sendData("Right");
             }
         });
 
@@ -206,5 +210,27 @@ public class ControllerHomeScreen extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public void errorExit(String title, String message){
+        Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    protected void sendData(String message) {
+        byte[] msgBuffer = message.getBytes();
+
+        Log.d(MainActivity1.label, "...Send data: " + message + "...");
+
+        try {
+            MainActivity1.outstream.write(msgBuffer);
+        } catch (IOException e) {
+            String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
+            if (MainActivity1.address.equals("00:00:00:00:00:00"))
+                msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
+            //msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
+
+            errorExit("Fatal Error", msg);
+        }
     }
 }
