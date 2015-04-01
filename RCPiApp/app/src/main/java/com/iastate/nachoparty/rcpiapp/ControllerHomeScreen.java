@@ -1,7 +1,6 @@
 package com.iastate.nachoparty.rcpiapp;
 
 import com.iastate.nachoparty.rcpiapp.util.SystemUiHider;
-import com.iastate.nachoparty.rcpiapp.util.BluetoothHandler;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -135,7 +134,7 @@ public class ControllerHomeScreen extends Activity {
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(getApplicationContext(), BluetoothHandler.class));
+                startActivity(new Intent(getApplicationContext(), MainActivity1.class));
             }
         });
 
