@@ -59,7 +59,7 @@ public class BluetoothHandler extends Activity {
 
         setContentView(R.layout.activity_bluetooth_handler);
 
-        final View controlsView = findViewById(R.id.listView);
+        final View controlsView = findViewById(R.id.listView_bluetoothItems);
         final View contentView = findViewById(R.id.textView_bMenu);
         final Button back=(Button) findViewById(R.id.button_back);
 
@@ -156,7 +156,7 @@ public class BluetoothHandler extends Activity {
 
     protected void registerClick()
     {
-        ListView list=(ListView) findViewById(R.id.listView);
+        ListView list=(ListView) findViewById(R.id.listView_bluetoothItems);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

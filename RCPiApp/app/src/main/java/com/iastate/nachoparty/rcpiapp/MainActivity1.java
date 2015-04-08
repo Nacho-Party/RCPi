@@ -1,6 +1,10 @@
 package com.iastate.nachoparty.rcpiapp;
 
 import android.app.Activity;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
 import android.nfc.Tag;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +14,7 @@ import android.view.MenuItem;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,7 +23,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 import com.iastate.nachoparty.rcpiapp.R;
 
@@ -29,6 +36,8 @@ public class MainActivity1 extends Activity {
     protected static BluetoothAdapter bluetoothAdapter = null;
     protected static BluetoothSocket bluetoothSocket = null;
     protected static OutputStream outstream = null;
+    private BluetoothDevice device;
+    private ArrayAdapter<String> bluetoothItems;
     // SPP UUID service
 
     //private static final UUID MY_UUID = UUID.fromString("00001101-0000-8000-00805F9B34FB");
@@ -41,9 +50,19 @@ public class MainActivity1 extends Activity {
         setContentView(R.layout.activity_full_screen);
         buttonOn = (Button) findViewById(R.id.button_go);
         buttonOff = (Button) findViewById(R.id.button_stop);
+        final Button back=(Button) findViewById(R.id.button_back);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //checkBTState();
 
+        ListView bluetoothList=(ListView) findViewById(R.id.listView_bluetoothItems);
+
+
+        back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), ControllerHomeScreen.class));
+            }
+        });
         /*
         buttonOn.setOnClickListener(new OnClickListener() {
             @Override
@@ -61,6 +80,22 @@ public class MainActivity1 extends Activity {
         });
 
         */
+    }
+
+    private BluetoothLeScanner scanner;
+    private List<ScanResult> bList;
+    //private ScanCallback call;
+    private BluetoothAdapter.LeScanCallback call;
+    protected void searching()
+    {
+        //scanner.startScan(call);
+        bluetoothAdapter.startLeScan(call);
+        //call.onBatchScanResults(bList);
+
+        for(ScanResult r:bList)
+        {
+            bluetoothItems.add(r.getDevice().getName());
+        }
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {

@@ -13,10 +13,10 @@
     <VideoView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/videoView"
+        android:id="@+id/car_view"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/button_left" />
+        android:layout_alignBottom="@+id/button_left" />
 
     <Button
         android:layout_width="wrap_content"
