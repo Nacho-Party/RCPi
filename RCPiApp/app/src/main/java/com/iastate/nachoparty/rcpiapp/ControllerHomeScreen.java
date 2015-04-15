@@ -1,7 +1,5 @@
 package com.iastate.nachoparty.rcpiapp;
 
-import com.iastate.nachoparty.rcpiapp.util.SystemUiHider;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
@@ -17,17 +15,18 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 
 public class ControllerHomeScreen extends Activity {
-
+    private OutputStream outputStream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_full_screen);
-        final VideoView sight= (VideoView) findViewById(R.id.car_view);
+
+        //final VideoView sight= (VideoView) findViewById(R.id.car_view);
         final Button bluetooth=(Button) findViewById(R.id.button_bluetooth);
         final Button go=(Button) findViewById(R.id.button_go);
         final Button stop=(Button) findViewById(R.id.button_stop);
@@ -52,26 +51,35 @@ public class ControllerHomeScreen extends Activity {
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("5");
+                sendData("1");
             }
         });
 
         left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("15");
+                sendData("2");
             }
         });
 
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("25");
+                sendData("3");
             }
         });
 
     }
 
+    public void onPause()
+    {
+        super.onPause();
+    }
+
+    public void onResume()
+    {
+        super.onResume();
+    }
 
     public void errorExit(String title, String message){
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
@@ -84,12 +92,12 @@ public class ControllerHomeScreen extends Activity {
         Log.d(MainActivity1.label, "...Send data: " + message + "...");
 
         try {
-            MainActivity1.outstream.write(msgBuffer);
+            outputStream.write(msgBuffer);
         } catch (IOException e) {
             String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
             if (MainActivity1.address.equals("00:00:00:00:00:00"))
                 msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
-            //msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
+            msg = msg +  ".\n\nCheck that the SPP UUID: " + MainActivity1.MY_UUID.toString() + " exists on server.\n\n";
 
             errorExit("Fatal Error", msg);
         }

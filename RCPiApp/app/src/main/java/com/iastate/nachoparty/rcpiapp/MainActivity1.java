@@ -32,27 +32,24 @@ import com.iastate.nachoparty.rcpiapp.R;
 public class MainActivity1 extends Activity {
 
     protected static final String label = "bluetooth1";
-    Button buttonOn, buttonOff;
     protected static BluetoothAdapter bluetoothAdapter = null;
     protected static BluetoothSocket bluetoothSocket = null;
-    protected static OutputStream outstream = null;
+    //protected static OutputStream outputStream;
     private BluetoothDevice device;
     private ArrayAdapter<String> bluetoothItems;
     // SPP UUID service
 
-    //private static final UUID MY_UUID = UUID.fromString("00001101-0000-8000-00805F9B34FB");
+    protected static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     //MAC address of bluetooth
     protected static String address = "00:02:72:cd:9f:60 ";//to be updated
 
     /* Called when the activity is first created */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_full_screen);
-        buttonOn = (Button) findViewById(R.id.button_go);
-        buttonOff = (Button) findViewById(R.id.button_stop);
+        setContentView(R.layout.activity_bluetooth_handler);
         final Button back=(Button) findViewById(R.id.button_back);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        //checkBTState();
+        checkBTState();
 
         ListView bluetoothList=(ListView) findViewById(R.id.listView_bluetoothItems);
 
@@ -63,38 +60,21 @@ public class MainActivity1 extends Activity {
                 startActivity(new Intent(getApplicationContext(), ControllerHomeScreen.class));
             }
         });
-        /*
-        buttonOn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                   sendData("1");
-                Toast.makeText(getBaseContext(), "Turn on LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-        buttonOff.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                 sendData("0");
-                Toast.makeText(getBaseContext(), "Turn off LED", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        */
     }
 
     private BluetoothLeScanner scanner;
     private List<ScanResult> bList;
-    //private ScanCallback call;
-    private BluetoothAdapter.LeScanCallback call;
+    private ScanCallback call;
+    //private BluetoothAdapter.LeScanCallback call;
     protected void searching()
     {
-        //scanner.startScan(call);
-        bluetoothAdapter.startLeScan(call);
-        //call.onBatchScanResults(bList);
+        scanner.startScan(call);
+        //bluetoothAdapter.startScan(call);
+        call.onBatchScanResults(bList);
 
         for(ScanResult r:bList)
         {
-            bluetoothItems.add(r.getDevice().getName());
+          bluetoothItems.add(r.getDevice().getName());
         }
     }
 
@@ -102,26 +82,26 @@ public class MainActivity1 extends Activity {
         if (Build.VERSION.SDK_INT >= 10) {
             try {
                 final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord");
-      //          return (BluetoothSocket) m.invoke(device, MY_UUID);
-            } catch (Exception e) {
-                Log.e(label, "Could not create Insecure RFComm Connection", e);
+                return (BluetoothSocket) m.invoke(device, MY_UUID);
+            } catch (Exception exception) {
+                Log.e(label, "Could not create Insecure RFComm Connection", exception);
 
             }
         }
-        //return device.createRfcommSocketToServiceRecord(MY_UUID);
-        return null;
+        return device.createRfcommSocketToServiceRecord(MY_UUID);
     }
-
     public void onResume() {
         super.onResume();
+        /*
         Log.d(label, "....onResume-try connect.....");
-        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+        // FIX ME BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
         try {
             bluetoothSocket = createBluetoothSocket(device);
         } catch (IOException e1) {
             errorExit("Fatal Error","In onResume() and socket create failed:"+e1.getMessage());
         }
-        bluetoothAdapter.cancelDiscovery();
+        //FIX ME
+        // bluetoothAdapter.cancelDiscovery();
         Log.d(label, "...Connecting.....");
 
 
@@ -143,10 +123,11 @@ public class MainActivity1 extends Activity {
         } catch (IOException e) {
             errorExit("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
         }
+        */
     }
     public void onPause() {
         super.onPause();
-
+        /*
         Log.d(label, "...In onPause()...");
 
         if (outstream != null) {
@@ -162,33 +143,32 @@ public class MainActivity1 extends Activity {
         } catch (IOException e2) {
            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
         }
+       */
     }
-    private void checkBTState() {
+    private void checkBTState() { //DONE
         // Check for Bluetooth support and then check to make sure it is turned on
         // Emulator doesn't support Bluetooth and will return null
         if(bluetoothAdapter==null) {
-            errorExit("Fatal Error", "Bluetooth not support");
+            errorExit("Fatal Error", "Bluetooth not supported");
         } else {
-            if (bluetoothAdapter.isEnabled()) {
-                Log.d(label, "...Bluetooth ON...");
-            } else {
+            if (!bluetoothAdapter.isEnabled()) {
                 //Prompt user to turn on Bluetooth
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, 1);
             }
         }
     }
-    protected void errorExit(String title, String message){
+    protected void errorExit(String title, String message){ //DONE
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
-        finish();
     }
+    /*
     protected void sendData(String message) {
         byte[] msgBuffer = message.getBytes();
 
         Log.d(label, "...Send data: " + message + "...");
 
         try {
-            outstream.write(msgBuffer);
+            outputStream.write(msgBuffer);
         } catch (IOException e) {
             String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
             if (address.equals("00:00:00:00:00:00"))
@@ -198,7 +178,7 @@ public class MainActivity1 extends Activity {
             errorExit("Fatal Error", msg);
         }
     }
-
+    */
 }
 
 

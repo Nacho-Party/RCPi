@@ -16,9 +16,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Bluetooth Menu"
         android:id="@+id/textView_bMenu"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/listView_bluetoothItems" />
+        android:layout_alignTop="@+id/button_back"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -26,7 +25,8 @@
         android:text="Back"
         android:id="@+id/button_back"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="58dp" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -35,10 +35,5 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/button_back"
         android:layout_alignParentBottom="true" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="16" />
-    
+
 </RelativeLayout>
