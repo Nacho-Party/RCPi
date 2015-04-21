@@ -1,10 +1,16 @@
 package com.iastate.nachoparty.rcpiapp;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothServerSocket;
+import android.content.Context;
+import android.R.layout;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +22,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
+import java.util.jar.Attributes;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -32,11 +40,14 @@ import com.iastate.nachoparty.rcpiapp.R;
 public class MainActivity1 extends Activity {
 
     protected static final String label = "bluetooth1";
-    protected static BluetoothAdapter bluetoothAdapter = null;
-    protected static BluetoothSocket bluetoothSocket = null;
+    protected static BluetoothAdapter bluetoothAdapter;
+    protected static BluetoothSocket bluetoothSocket;
+    protected static BluetoothServerSocket serverSocket;
     //protected static OutputStream outputStream;
     private BluetoothDevice device;
     private ArrayAdapter<String> bluetoothItems;
+    protected static OutputStream outputStream;
+    private BroadcastReceiver receiver;
     // SPP UUID service
 
     protected static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -51,8 +62,42 @@ public class MainActivity1 extends Activity {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         checkBTState();
 
+        try {
+            serverSocket=bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(label, MY_UUID);
+        } catch (IOException e){}
+
+        try{
+            bluetoothSocket=serverSocket.accept();
+        }catch(IOException e) {}
+
+        try{
+            outputStream=MainActivity1.bluetoothSocket.getOutputStream();
+        }catch (IOException e){
+            Log.d(MainActivity1.label,"Output stream connection failed.");
+        }
+
+        receiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent)
+            {
+                String a=intent.getAction();
+
+                if(BluetoothDevice.ACTION_FOUND.equals(a))
+                {
+                    BluetoothDevice device=intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                    bluetoothItems.add(device.getName());
+                }
+            }
+        };
+        IntentFilter filter=new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(receiver, filter);
+
+        //searching();
+
         ListView bluetoothList=(ListView) findViewById(R.id.listView_bluetoothItems);
 
+        bluetoothList.setAdapter(new ArrayAdapter<String>(this,R.layout.abc_list_menu_item_layout));
 
         back.setOnClickListener(new OnClickListener() {
             @Override
@@ -66,16 +111,17 @@ public class MainActivity1 extends Activity {
     private List<ScanResult> bList;
     private ScanCallback call;
     //private BluetoothAdapter.LeScanCallback call;
-    protected void searching()
+    private Intent intent;
+    public void registerReceiver(View view)
     {
-        scanner.startScan(call);
-        //bluetoothAdapter.startScan(call);
-        call.onBatchScanResults(bList);
+        this.registerReceiver(receiver, new IntentFilter("android.intent.action.TIME_TICK"));
+        Toast.makeText(this,"Registered broadcast receiver", Toast.LENGTH_SHORT).show();
+    }
 
-        for(ScanResult r:bList)
-        {
-          bluetoothItems.add(r.getDevice().getName());
-        }
+    public void unregisterReceiver(View view)
+    {
+        this.unregisterReceiver(receiver);
+        Toast.makeText(this,"broadcast receiver unregistered",Toast.LENGTH_SHORT);
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -92,6 +138,7 @@ public class MainActivity1 extends Activity {
     }
     public void onResume() {
         super.onResume();
+        checkBTState();
         /*
         Log.d(label, "....onResume-try connect.....");
         // FIX ME BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
@@ -127,6 +174,7 @@ public class MainActivity1 extends Activity {
     }
     public void onPause() {
         super.onPause();
+        unregisterReceiver(receiver);
         /*
         Log.d(label, "...In onPause()...");
 
@@ -145,6 +193,12 @@ public class MainActivity1 extends Activity {
         }
        */
     }
+    public void onDestroy()
+    {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
+
     private void checkBTState() { //DONE
         // Check for Bluetooth support and then check to make sure it is turned on
         // Emulator doesn't support Bluetooth and will return null
