@@ -1,202 +1,179 @@
 package com.iastate.nachoparty.rcpiapp.util;
 
-import com.iastate.nachoparty.rcpiapp.util.util.SystemUiHider;
-import com.iastate.nachoparty.rcpiapp.ControllerHomeScreen;
-
-import android.annotation.TargetApi;
 import android.app.Activity;
+import android.bluetooth.BluetoothServerSocket;
+import android.content.Context;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import com.iastate.nachoparty.rcpiapp.ControllerHomeScreen;
 import com.iastate.nachoparty.rcpiapp.R;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
-public class BluetoothHandler extends Activity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
+public class BluetoothHandler extends Activity implements OnItemClickListener {
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    protected static BluetoothAdapter bluetoothAdapter;
+    protected static BluetoothSocket bluetoothSocket;
+    private ArrayList<String> bluetoothDevices;
+    private ArrayList<BluetoothDevice> devices;
+    private ArrayAdapter<String> list;
+    private ListView listView;
+    protected IntentFilter filter;
+    protected BroadcastReceiver receiver;
+    protected static final int SUCCESSFUL=0;
+    protected static final String label = "bluetooth1";
+    protected static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    /*
+    protected static Handler handler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message m)
+        {
+            super.handleMessage(m);
+            switch(m.what)
+            {
+                case SUCCESSFUL:
+                    ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket)m.obj);
 
-    /**
-     * If set, will toggle the system UI visibility upon interaction. Otherwise,
-     * will show the system UI visibility upon interaction.
-     */
-    private static final boolean TOGGLE_ON_CLICK = true;
-
-    /**
-     * The flags to pass to {@link SystemUiHider#getInstance}.
-     */
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
-
-    /**
-     * The instance of the {@link SystemUiHider} for this activity.
-     */
-    private SystemUiHider mSystemUiHider;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_bluetooth_handler);
-
-        final View controlsView = findViewById(R.id.listView_bluetoothItems);
-        final View contentView = findViewById(R.id.textView_bMenu);
-        final Button back=(Button) findViewById(R.id.button_back);
-
-        // Set up an instance of SystemUiHider to control the system UI for
-        // this activity.
-        mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
-        mSystemUiHider.setup();
-        mSystemUiHider
-                .setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
-                    // Cached values.
-                    int mControlsHeight;
-                    int mShortAnimTime;
-
-                    @Override
-                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-                    public void onVisibilityChange(boolean visible) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                            // If the ViewPropertyAnimator API is available
-                            // (Honeycomb MR2 and later), use it to animate the
-                            // in-layout UI controls at the bottom of the
-                            // screen.
-                            if (mControlsHeight == 0) {
-                                mControlsHeight = controlsView.getHeight();
-                            }
-                            if (mShortAnimTime == 0) {
-                                mShortAnimTime = getResources().getInteger(
-                                        android.R.integer.config_shortAnimTime);
-                            }
-                            controlsView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
-                        } else {
-                            // If the ViewPropertyAnimator APIs aren't
-                            // available, simply show or hide the in-layout UI
-                            // controls.
-                            controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-                        }
-
-                        if (visible && AUTO_HIDE) {
-                            // Schedule a hide().
-                            delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                        }
-                    }
-                });
-
-        // Set up the user interaction to manually show or hide the system UI.
-        contentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (TOGGLE_ON_CLICK) {
-                    mSystemUiHider.toggle();
-                } else {
-                    mSystemUiHider.show();
-                }
             }
-        });
+        }
+    };
+    */
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bluetooth_handler);
+        Button back = (Button) findViewById(R.id.button_back);
+        listView = (ListView) findViewById(R.id.listView_bluetoothItems);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        checkBTState();
+        search();
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        findViewById(R.id.button_back).setOnTouchListener(mDelayHideTouchListener);
 
-        //populateListView();
-        registerClick();
-        back.setOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(getApplicationContext(), ControllerHomeScreen.class));
             }
         });
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
+    public void onResume()
+    {
+        super.onResume();
+        search();
     }
 
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
 
-    /*protected void populateListView()
+    public void onDestroy()
     {
-        String myItems[];//Add bluetooth items to this list
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
 
-        ArrayAdapter <String> adapter=new ArrayAdapter<String>(myItems);
-
-        ListView list=(ListView) findViewById(R.id.listView_btooth);
-        list.setAdapter(adapter);
-    }*/
-
-    protected void registerClick()
-    {
-        ListView list=(ListView) findViewById(R.id.listView_bluetoothItems);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    public void search() {
+        listView.setOnItemClickListener(this);
+        list = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        listView.setAdapter(list);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothDevices = new ArrayList<String>();
+        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        devices = new ArrayList<BluetoothDevice>();
+        receiver = new BroadcastReceiver() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
 
-                //Add implementation for the connection of the bluetooth car to the android device.
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    String name = "";
 
-                Toast.makeText(BluetoothHandler.this, "You have been connected", Toast.LENGTH_LONG);
+                    devices.add(device);
+                    list.add(device.getName() + "\n" + device.getAddress());
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                    Toast.makeText(getApplicationContext(), "Started searching for devices", Toast.LENGTH_LONG).show();
+                } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                    Toast.makeText(getApplicationContext(), "Finished searching", Toast.LENGTH_SHORT).show();
+                } else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                    if (bluetoothAdapter.getState() == BluetoothAdapter.STATE_OFF) {
+                        checkBTState();
+                    }
+                }
+
             }
-        });
+        };
+        registerReceiver(receiver, filter);
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        registerReceiver(receiver, filter);
+        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(receiver, filter);
+        filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(receiver, filter);
+
+        discover();
     }
 
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+    public void discover() {
+        bluetoothAdapter.cancelDiscovery();
+        bluetoothAdapter.startDiscovery();
+    }
+
+    private void checkBTState() { //DONE
+        // Check for Bluetooth support and then check to make sure it is turned on
+        // Emulator doesn't support Bluetooth and will return null
+        if (bluetoothAdapter == null) {
+            errorExit("Fatal Error", "Bluetooth not supported");
+        } else {
+            if (!bluetoothAdapter.isEnabled()) {
+                //Prompt user to turn on Bluetooth
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 1);
             }
-            return false;
         }
-    };
+    }
 
-    Handler mHideHandler = new Handler();
-    Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mSystemUiHider.hide();
+    protected void errorExit(String title, String message) { //DONE
+        Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        if (bluetoothAdapter.isDiscovering()) {
+            bluetoothAdapter.cancelDiscovery();
         }
-    };
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+        if (list.getItem(position).contains("Paired")) {
+            BluetoothDevice newDevice = devices.get(position);
+            ConnectThread connection = new ConnectThread(newDevice);
+        }
     }
 }

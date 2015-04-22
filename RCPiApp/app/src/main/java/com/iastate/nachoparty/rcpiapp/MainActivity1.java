@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.UUID;
 import java.util.jar.Attributes;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -68,7 +67,7 @@ public class MainActivity1 extends Activity {
 
         try{
             bluetoothSocket=serverSocket.accept();
-        }catch(IOException e) {}
+        }catch  (IOException e) {}
 
         try{
             outputStream=MainActivity1.bluetoothSocket.getOutputStream();

@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.iastate.nachoparty.rcpiapp.util.BluetoothHandler;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +41,7 @@ public class ControllerHomeScreen extends Activity {
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(getApplicationContext(), MainActivity1.class));
+                startActivity(new Intent(getApplicationContext(), BluetoothHandler.class));
             }
         });
 
@@ -90,27 +92,18 @@ public class ControllerHomeScreen extends Activity {
         }
     }
 
+    public void onDestroy()
+    {
+        super.onDestroy();
+    }
+
     public void errorExit(String title, String message){
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
     }
 
-    protected void sendData(String message) {
-        byte[] msgBuffer = message.getBytes();
+    protected void sendData(String message)
+    {
 
-        Log.d(MainActivity1.label, "...Send data: " + message + "...");
-
-        try {
-            MainActivity1.outputStream.write(msgBuffer);
-        } catch (IOException e) {
-            String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
-            if (MainActivity1.address.equals("00:00:00:00:00:00"))
-                msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
-            msg = msg +  ".\n\nCheck that the SPP UUID: " + MainActivity1.MY_UUID.toString() + " exists on server.\n\n";
-
-            errorExit("Fatal Error", msg);
-        } catch(NullPointerException e){
-            Log.d(MainActivity1.label,"Caught null pointer");
-        }
     }
 }

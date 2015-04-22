@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity1"
+            android:name=".util.BluetoothHandler"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_bluetooth_handler"
             android:theme="@style/FullscreenTheme" >
