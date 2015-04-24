@@ -57,7 +57,7 @@ public class ConnectedThread extends Activity
         try
         {
             stream.write(b);
-            Log.i(BluetoothHandler.label,"Data Sent: "+b.toString());
+            Log.i(BluetoothHandler.label,"Data Sent: ");
         }
         catch (IOException e)
         {
