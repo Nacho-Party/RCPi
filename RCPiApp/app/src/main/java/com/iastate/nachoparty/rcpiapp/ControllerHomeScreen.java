@@ -3,6 +3,7 @@ package com.iastate.nachoparty.rcpiapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
@@ -42,11 +43,45 @@ public class ControllerHomeScreen extends Activity {
             }
         });
 
+        go.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                String message="0";
+                BluetoothHandler.connected.sendData(message.getBytes());
+
+                return true;
+            }
+        });
+
+        go.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.equals(MotionEvent.ACTION_UP))
+                {
+                    String message="1";
+                    BluetoothHandler.connected.sendData(message.getBytes());
+                }
+
+                return true;
+            }
+        });
+
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message="1";
+                String message = "1";
                 BluetoothHandler.connected.sendData(message.getBytes());
+            }
+        });
+
+        stop.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                String message="4";
+                BluetoothHandler.connected.sendData(message.getBytes());
+
+                return true;
             }
         });
 
@@ -58,11 +93,59 @@ public class ControllerHomeScreen extends Activity {
             }
         });
 
+        left.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                String message="2";
+                BluetoothHandler.connected.sendData(message.getBytes());
+
+                return true;
+            }
+        });
+
+        left.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.equals(MotionEvent.ACTION_UP))
+                {
+                    String message="1";
+                    BluetoothHandler.connected.sendData(message.getBytes());
+                }
+
+                return true;
+            }
+        });
+
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String message="3";
                 BluetoothHandler.connected.sendData(message.getBytes());
+            }
+        });
+
+        right.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                String message="3";
+                BluetoothHandler.connected.sendData(message.getBytes());
+
+                return true;
+            }
+        });
+
+        right.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.equals(MotionEvent.ACTION_UP))
+                {
+                    String message="1";
+                    BluetoothHandler.connected.sendData(message.getBytes());
+                }
+
+                return true;
             }
         });
 
