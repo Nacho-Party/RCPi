@@ -1,12 +1,8 @@
-package com.iastate.nachoparty.rcpiapp.util;
+package com.iastate.nachoparty.rcpiapp;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.iastate.nachoparty.rcpiapp.ControllerHomeScreen;
 
 import java.io.IOException;
 
@@ -15,7 +11,6 @@ import java.io.IOException;
  */
 public class ConnectThread extends Thread
 {
-    private final BluetoothSocket socket;
     private final BluetoothDevice device;
 
     public ConnectThread(BluetoothDevice d)
@@ -31,7 +26,7 @@ public class ConnectThread extends Thread
             Log.i(BluetoothHandler.label, "Get socket failed.");
         }
 
-        socket=temp;
+        BluetoothHandler.bluetoothSocket=temp;
     }
 
     public void konnekt()
@@ -39,16 +34,16 @@ public class ConnectThread extends Thread
         BluetoothHandler.bluetoothAdapter.cancelDiscovery();
         try
         {
-            socket.connect();
-            Log.i(BluetoothHandler.label,"Connected");
+            BluetoothHandler.bluetoothSocket.connect();
+            Log.i(BluetoothHandler.label,"Connected -- ConnectThread");
         }
         catch (IOException e)
         {
-            Log.i(BluetoothHandler.label,"Connection failed.");
+            Log.i(BluetoothHandler.label,"Connection failed. ConnectThread");
         }
         try
         {
-            socket.close();
+            BluetoothHandler.bluetoothSocket.close();
         }
         catch (IOException e)
         {
@@ -62,7 +57,7 @@ public class ConnectThread extends Thread
     {
         try
         {
-            socket.close();
+            BluetoothHandler.bluetoothSocket.close();
         }
         catch (IOException e)
         {

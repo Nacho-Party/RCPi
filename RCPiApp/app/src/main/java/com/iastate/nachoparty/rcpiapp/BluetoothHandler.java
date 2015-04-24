@@ -1,28 +1,18 @@
-package com.iastate.nachoparty.rcpiapp.util;
+package com.iastate.nachoparty.rcpiapp;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,8 +22,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import com.iastate.nachoparty.rcpiapp.ControllerHomeScreen;
-import com.iastate.nachoparty.rcpiapp.R;
 
 public class BluetoothHandler extends Activity implements OnItemClickListener {
 
@@ -48,22 +36,11 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
     protected static final int SUCCESSFUL=0;
     protected static final String label = "bluetooth1";
     protected static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    /*
-    protected static Handler handler = new Handler()
-    {
-        @Override
-        public void handleMessage(Message m)
-        {
-            super.handleMessage(m);
-            switch(m.what)
-            {
-                case SUCCESSFUL:
-                    ConnectedThread connectedThread = new ConnectedThread((BluetoothSocket)m.obj);
+    protected static ConnectThread thread;
+    protected static ConnectedThread connected;
+    private ArrayList<String> pairedDevices=new ArrayList<String>();
+    private Set<BluetoothDevice> paired;
 
-            }
-        }
-    };
-    */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_handler);
@@ -73,6 +50,30 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
         checkBTState();
         search();
 
+        listView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (bluetoothAdapter.isDiscovering()) {
+                    bluetoothAdapter.cancelDiscovery();
+                }
+                BluetoothDevice newDevice = devices.get(position);
+                thread=new ConnectThread(newDevice);
+                thread.konnekt();
+                if(thread!=null) {
+                    Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(),"Connection Failed",Toast.LENGTH_SHORT);
+                }
+                try {
+                        connected = new ConnectedThread(bluetoothSocket);
+                } catch (NullPointerException e) {
+                        Toast.makeText(getApplicationContext(), "Connect to a device", Toast.LENGTH_SHORT).show();
+                        Log.i(label,"In onClickListener -- onCreate");
+                }
+            }
+        });
 
         back.setOnClickListener(new OnClickListener() {
             @Override
@@ -85,7 +86,6 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
     public void onResume()
     {
         super.onResume();
-        search();
     }
 
     public void onPause() {
@@ -95,8 +95,9 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
 
     public void onDestroy()
     {
-        unregisterReceiver(receiver);
+
         super.onDestroy();
+        unregisterReceiver(receiver);
     }
 
     public void search() {
@@ -107,6 +108,7 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
         bluetoothDevices = new ArrayList<String>();
         filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         devices = new ArrayList<BluetoothDevice>();
+        getPaired();
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -114,10 +116,10 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
 
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    String name = "";
 
                     devices.add(device);
-                    list.add(device.getName() + "\n" + device.getAddress());
+                    list.add(device.getName());
+
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                     Toast.makeText(getApplicationContext(), "Started searching for devices", Toast.LENGTH_LONG).show();
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -160,6 +162,19 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
         }
     }
 
+    public void getPaired()
+    {
+        paired=bluetoothAdapter.getBondedDevices();
+        if(paired.size()>0)
+        {
+            for(BluetoothDevice connections: paired)
+            {
+                pairedDevices.add(connections.getName());
+            }
+        }
+    }
+
+
     protected void errorExit(String title, String message) { //DONE
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
@@ -174,6 +189,13 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
         if (list.getItem(position).contains("Paired")) {
             BluetoothDevice newDevice = devices.get(position);
             ConnectThread connection = new ConnectThread(newDevice);
+            Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_SHORT).show();
+            connected=new ConnectedThread(bluetoothSocket);
+            startActivity(new Intent(getApplicationContext(), ControllerHomeScreen.class));
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Connection failed.",Toast.LENGTH_SHORT).show();
         }
     }
 }

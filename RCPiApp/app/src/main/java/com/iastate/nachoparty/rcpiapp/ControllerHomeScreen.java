@@ -1,24 +1,14 @@
 package com.iastate.nachoparty.rcpiapp;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.content.Intent;
 import android.widget.Toast;
-import android.widget.VideoView;
-
-import com.iastate.nachoparty.rcpiapp.util.BluetoothHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 
 public class ControllerHomeScreen extends Activity {
@@ -29,7 +19,6 @@ public class ControllerHomeScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen);
 
-        //final VideoView sight= (VideoView) findViewById(R.id.car_view);
         final Button bluetooth=(Button) findViewById(R.id.button_bluetooth);
         final Button go=(Button) findViewById(R.id.button_go);
         final Button stop=(Button) findViewById(R.id.button_stop);
@@ -48,28 +37,39 @@ public class ControllerHomeScreen extends Activity {
         go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("0");
+                String message="0";
+                BluetoothHandler.connected.sendData(message.getBytes());
             }
         });
 
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("1");
+                String message="1";
+                BluetoothHandler.connected.sendData(message.getBytes());
             }
         });
 
         left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("2");
+                String message="2";
+                BluetoothHandler.connected.sendData(message.getBytes());
             }
         });
 
         right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendData("3");
+                String message="3";
+                BluetoothHandler.connected.sendData(message.getBytes());
+            }
+        });
+
+        stop.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
             }
         });
 
@@ -83,13 +83,6 @@ public class ControllerHomeScreen extends Activity {
     public void onResume()
     {
         super.onResume();
-        try {
-            MainActivity1.outputStream = MainActivity1.bluetoothSocket.getOutputStream();
-        } catch (IOException e) {
-            errorExit("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
-        } catch(NullPointerException e) {
-            Log.d(MainActivity1.label, "Null pointer caught");
-        }
     }
 
     public void onDestroy()
@@ -102,8 +95,4 @@ public class ControllerHomeScreen extends Activity {
         finish();
     }
 
-    protected void sendData(String message)
-    {
-
-    }
 }
