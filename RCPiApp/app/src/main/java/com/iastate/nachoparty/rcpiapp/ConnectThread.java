@@ -40,16 +40,16 @@ public class ConnectThread extends Thread
         catch (IOException e)
         {
             Log.i(BluetoothHandler.label,"Connection failed. ConnectThread");
-        }
-        try
-        {
-            BluetoothHandler.bluetoothSocket.close();
-        }
-        catch (IOException e)
-        {
-            return;
-        }
+            try
+            {
+                BluetoothHandler.bluetoothSocket.close();
+            }
+            catch (IOException exception)
+            {
+                return;
+            }
 
+        }
         //BluetoothHandler.handler.obtainMessage(BluetoothHandler.SUCCESSFUL,socket);
     }
 

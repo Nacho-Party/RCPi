@@ -68,6 +68,8 @@ public class BluetoothHandler extends Activity implements OnItemClickListener {
                 }
                 try {
                         connected = new ConnectedThread(bluetoothSocket);
+                        String dummyData="";
+                        connected.sendData(dummyData.getBytes());
                 } catch (NullPointerException e) {
                         Toast.makeText(getApplicationContext(), "Connect to a device", Toast.LENGTH_SHORT).show();
                         Log.i(label,"In onClickListener -- onCreate");
