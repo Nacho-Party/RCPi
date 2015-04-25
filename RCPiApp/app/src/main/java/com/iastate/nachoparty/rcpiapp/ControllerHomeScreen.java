@@ -22,7 +22,7 @@ public class ControllerHomeScreen extends Activity {
 
         final Button bluetooth=(Button) findViewById(R.id.button_bluetooth);
         final Button go=(Button) findViewById(R.id.button_go);
-        //final Button stop=(Button) findViewById(R.id.button_stop);
+        final Button stop=(Button) findViewById(R.id.button_stop);
         final Button left=(Button) findViewById(R.id.button_left);
         final Button right=(Button) findViewById(R.id.button_right);
 
@@ -57,16 +57,16 @@ public class ControllerHomeScreen extends Activity {
         go.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_UP)
+                if(event.equals(MotionEvent.ACTION_UP))
                 {
                     String message="1";
                     BluetoothHandler.connected.sendData(message.getBytes());
                 }
 
-                return false;
+                return true;
             }
         });
-        /*
+
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,7 +84,7 @@ public class ControllerHomeScreen extends Activity {
                 return true;
             }
         });
-        */
+
         left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,16 +103,17 @@ public class ControllerHomeScreen extends Activity {
                 return true;
             }
         });
+
         left.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_UP)
+                if(event.equals(MotionEvent.ACTION_UP))
                 {
-                    String message="-1";
+                    String message="1";
                     BluetoothHandler.connected.sendData(message.getBytes());
                 }
 
-                return false;
+                return true;
             }
         });
 
@@ -138,16 +139,15 @@ public class ControllerHomeScreen extends Activity {
         right.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction()==MotionEvent.ACTION_UP)
+                if(event.equals(MotionEvent.ACTION_UP))
                 {
-                    String message="-1";
+                    String message="1";
                     BluetoothHandler.connected.sendData(message.getBytes());
                 }
 
-                return false;
+                return true;
             }
         });
-
 
     }
 
